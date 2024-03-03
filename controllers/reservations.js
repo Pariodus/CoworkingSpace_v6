@@ -154,35 +154,68 @@ exports.addReservation = async (req, res, next) => {
   }
 };
 
+
 //@desc     Update reservation
-//@route    PUT /api/v1/reservations
+//@route    PUT /api/v1/reservations/:reservationID
 //@access   Private
 exports.updateReservation = async (req, res, next) => {
   try {
     let reservation = await Reservation.findById(req.params.id);
+    // let coworking = await Coworking.findById(reservation.coworking);
 
     if (!reservation) {
-      return res
-        .status(404)
-        .json({ success: false, message: `No appt with id ${req.params.id}` });
+      return res.status(404).json({ success: false, message: `No appt with id ${req.params.id}` });
     }
 
-    if (
-      reservation.user.toString() !== req.user.id &&
-      req.user.role !== "admin"
-    ) {
-      return res
-        .status(401)
-        .json({
-          success: false,
-          message: `User ${req.user.id} is not authorized to update this reservation`,
-        });
+    if (reservation.user.toString() !== req.user.id && req.user.role !== "admin") {
+      return res.status(401).json({success: false, message: `User ${req.user.id} is not authorized to update this reservation`});
     }
 
-    reservation = await Reservation.findByIdAndUpdate(req.params.id, req.body, {
-      new: true,
-      runValidators: true,
-    });
+    if (req.body.reserveDateStart > req.body.reserveDateEnd) {
+      return res.status(500).json({ success: false, message: "Please reserve again" });
+    }
+
+    if(req.body.reserveDateStart){
+      const start = req.body.reserveDateStart.split("T")[1].split(".")[0];
+      const startcompare = new Date(`2000-01-01T${start}`);
+      startcompare.setHours(startcompare.getHours() + 7);
+
+      let coworking = await Coworking.findById(reservation.coworking);
+      const costart = coworking.openTime;
+      const costartcompare = new Date(`2000-01-01T${costart}`);
+      costartcompare.setHours(costartcompare.getHours() + 7);
+
+      if (startcompare < costartcompare) {
+          return res
+            .status(500)
+            .json({
+              success: false,
+              message: `Sorry, ${coworking.name} is closing.`,
+            });
+        }
+    }
+
+    if(req.body.reserveDateEnd){
+      const end = req.body.reserveDateEnd.split("T")[1].split(".")[0];
+      const endcompare = new Date(`2000-01-01T${end}`);
+      endcompare.setHours(endcompare.getHours() + 7);
+
+      let coworking = await Coworking.findById(reservation.coworking);
+      const coend = coworking.closeTime;
+      const coendcompare = new Date(`2000-01-01T${coend}`);
+      coendcompare.setHours(coendcompare.getHours() + 7);
+
+      if (endcompare > coendcompare) {
+          return res
+            .status(500)
+            .json({
+              success: false,
+              message: `Sorry, ${coworking.name} is closing.`,
+            });
+        }
+    }
+
+    reservation = await Reservation.findByIdAndUpdate(req.params.id, req.body, {new: true, runValidators: true});
 
     res.status(200).json({ success: true, data: reservation });
   } catch (err) {
@@ -256,33 +289,6 @@ exports.getUserReservations = async (req, res, next) => {
   }
 };
 
-// //@desc     Get reservations within a specified time range
-// //@route    GET /api/v1/reservations/range/:start/:end
-// //@access   Public
-// exports.getReservationsInRange = async (req, res, next) => {
-//     try {
-//         const start = new Date(req.params.start); // Start time
-//         const end = new Date(req.params.end); // End time
-
-//         // Find reservations within the specified time range
-//         const reservations = await Reservation.find({
-//             reserveDateStart: { $gte: start }, // Greater than or equal to start time
-//             reserveDateEnd: { $lte: end } // Less than or equal to end time
-//         }).populate({
-//             path: 'coworking',
-//             select: 'name province tel'
-//         });
-
-//         res.status(200).json({
-//             success: true,
-//             count: reservations.length,
-//             data: reservations
-//         });
-//     } catch (error) {
-//         console.log(error);
-//         return res.status(500).json({ success: false, message: "Cannot find reservations within the specified time range" });
-//     }
-// };
 
 //@desc     Get reservations within a specified time range
 //@route    GET /api/v1/reservations/range/:start/:end
