@@ -145,7 +145,7 @@ exports.addReservation = async (req, res, next) => {
     }
 
     const reservation = await Reservation.create(req.body);
-    res.status(200).json({ success: true, data: reservation });
+    res.status(201).json({ success: true, data: reservation });
   } catch (err) {
     console.log(err.stack);
     return res
