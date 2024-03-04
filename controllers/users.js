@@ -2,7 +2,7 @@ const User = require("../models/User");
 
 //@desc     Get all users
 //@route    GET /api/v1/users
-//@access   Private (for admin only)
+//@access   Private
 exports.getUsers = async (req, res, next) => {
   try {
     // Check if the user is an admin
@@ -72,7 +72,7 @@ exports.updateUser = async (req, res, next) => {
 
 //@desc     Delete user
 //@route    Delete /api/v1/users/:id
-//@access   Private (for admin only)
+//@access   Private
 exports.deleteUser = async (req, res, next) => {
   try {
     // Check if the user is an admin

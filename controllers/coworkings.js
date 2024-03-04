@@ -2,7 +2,7 @@ const Coworking = require('../models/Coworking')
 
 //@desc     Get all coworkings
 //@route    GET /api/v1/coworkings
-//@access   Public
+//@access   Private
 exports.getCoworkings=async(req,res,next)=>{
     let query;
 
@@ -75,7 +75,7 @@ exports.getCoworkings=async(req,res,next)=>{
 
 //@desc     Get single coworking
 //@route    GET /api/v1/coworkings/:id
-//@access   Public
+//@access   Private
 exports.getCoworking=async(req,res,next)=>{
     try{
         const coworking = await Coworking.findById(req.params.id);
@@ -92,7 +92,7 @@ exports.getCoworking=async(req,res,next)=>{
 
 //@desc     Create a coworking
 //@route    POST /api/v1/coworkings
-//@access   Private
+//@access   Private (only admin)
 exports.createCoworking = async(req,res,next)=>{
     //console.log(req.body);
     const coworking = await Coworking.create(req.body);
@@ -101,7 +101,7 @@ exports.createCoworking = async(req,res,next)=>{
 
 //@desc     Update single coworking
 //@route    PUT /api/v1/coworkings/:id
-//@access   Private
+//@access   Private (only admin)
 exports.updateCoworking = async(req,res,next)=>{
     try{
         const coworking = await Coworking.findByIdAndUpdate(req.params.id, req.body,{

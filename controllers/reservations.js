@@ -44,7 +44,7 @@ exports.getReservations = async (req, res, next) => {
 
 //desc      Get single reservation
 //route     GET /api/v1/reservations/:id
-//access    Public
+//access    Private
 exports.getReservation = async (req, res, next) => {
   try {
     const reservation = await Reservation.findById(req.params.id).populate({
@@ -75,7 +75,7 @@ exports.getReservation = async (req, res, next) => {
 
 //@desc     Add single reservation
 //@route    POST /api/v1/coworkings/:coworkingId/reservations/
-//@access   Public
+//@access   Private
 exports.addReservation = async (req, res, next) => {
   try {
     req.body.coworking = req.params.coworkingId;
@@ -292,7 +292,7 @@ exports.getUserReservations = async (req, res, next) => {
 
 //@desc     Get reservations within a specified time range
 //@route    GET /api/v1/reservations/range/:start/:end
-//@access   Public
+//@access   Private
 exports.getReservationsInRange = async (req, res, next) => {
     try {
       // Check if the user making the request is an admin
