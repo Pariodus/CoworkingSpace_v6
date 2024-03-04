@@ -7,9 +7,7 @@ exports.getUsers = async (req, res, next) => {
   try {
     // Check if the user is an admin
     if (req.user.role !== "admin") {
-      return res
-        .status(401)
-        .json({ success: false, message: "Unauthorized access" });
+      return res.status(401).json({ success: false, message: "Unauthorized access"});
     }
 
     // Fetch all users from the database
@@ -18,7 +16,7 @@ exports.getUsers = async (req, res, next) => {
     res.status(200).json({
       success: true,
       count: users.length,
-      data: users,
+      data: users
     });
   } catch (error) {
     console.log(error);

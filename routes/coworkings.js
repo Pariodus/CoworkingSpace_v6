@@ -10,7 +10,7 @@ const {protect, authorize} = require('../middleware/auth');
 //Re-route into other resource routers
 router.use('/:coworkingId/reservations/', reservationRouter);
 
-router.route('/').get(getCoworkings).post(protect, authorize('admin'), createCoworking);
-router.route('/:id').get(getCoworking).put(protect, authorize('admin'), updateCoworking).delete(protect, authorize('admin'), deleteCoworking);
+router.route('/').get(protect, getCoworkings).post(protect, authorize('admin'), createCoworking);
+router.route('/:id').get(protect, getCoworking).put(protect, authorize('admin'), updateCoworking).delete(protect, authorize('admin'), deleteCoworking);
 
 module.exports = router;
